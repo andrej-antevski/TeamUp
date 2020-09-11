@@ -1,0 +1,11 @@
+﻿@model IEnumerable<TeamUp.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "View";
+}
+
+<h2>View</h2>
+
+@foreach (var item in Model) {
+    <p>@item.Email</p>
+}

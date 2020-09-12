@@ -94,12 +94,12 @@ namespace TeamUp.Models
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2020")]
         public DateTime Birthday { get; set; }
 
         [Display(Name = "Profile Photo")]
-        [Required]
         public string ImagePath { get; set; }
-
+        [Required]
         public HttpPostedFileBase ImageFile { get; set; }
     }
 

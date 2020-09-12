@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace TeamUp.Controllers
         // GET: Teams
         public ActionResult Index()
         {
+            ViewBag.IdLoggedIn = db.Users.Find(User.Identity.GetUserId()).Id;
             return View(db.Teams.ToList());
         }
 
@@ -34,6 +36,7 @@ namespace TeamUp.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.IdLoggedIn = db.Users.Find(User.Identity.GetUserId()).Id;
             return View(team);
         }
 
@@ -186,15 +189,16 @@ namespace TeamUp.Controllers
                     r = role;
                 }
             }
-
+            var from = db.Users.Find(User.Identity.GetUserId());
             var application = new Application();
             application.ForRole = r;
-            application.From = db.Users.Find(User.Identity.GetUserId());
+            application.From = from;
             application.Description = message;
             application.DateSent = DateTime.Now;
             application.Status = "w";
             application.To = team;
             db.Applications.Add(application);
+            from.Applications.Add(application);
             db.SaveChanges();
         }
         public ActionResult Applications(int id)
@@ -217,6 +221,29 @@ namespace TeamUp.Controllers
             }
 
             return View(applications);
+        }
+
+        public ActionResult AcceptApplication(int id)
+        {
+
+            var app = db.Applications.Find(id);
+            var user = db.Users.Find(app.From.Id);
+            var team = app.To;
+            var role = app.ForRole;
+            var roleInTeam = team.RolesNeeded.FirstOrDefault(m => m.Id == role.Id);
+            app.Status = "a";
+            roleInTeam.Filled = true;
+            roleInTeam.FilledBy = user;
+            team.Members.Add(user);
+            user.Teams.Add(team);
+            db.SaveChanges();
+            return View();
+        }
+        public ActionResult DenyApplication(int id)
+        {
+            db.Applications.Find(id).Status = "d";
+            db.SaveChanges();
+            return View();
         }
         protected override void Dispose(bool disposing)
         {

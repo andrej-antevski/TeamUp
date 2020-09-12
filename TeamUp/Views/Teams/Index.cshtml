@@ -46,11 +46,26 @@
                 </td>
                 <td>
                     <dl class="dl-horizontal">
+                        @{ 
+                            var teamMember = false;
+
+                            foreach (var member in item.Members)
+                            {
+                                if (ViewBag.IdLoggedIn == member.Id)
+                                {
+                                    teamMember = true;
+                                    break;
+                                }
+                            }
+                        }
                         @foreach (var role in item.RolesNeeded)
                         {
+                            if (role.Filled) { continue; }
                             <dt>
                                 @role.Name
-                            (<a href="#" onclick="apply(@role.Id, @item.Id)">Apply</a>)
+                                @if (!teamMember) { 
+                                    <a href="#" onclick="apply(@role.Id, @item.Id)">Apply</a>
+                                   }
                         </dt>
                         <dd>@role.Description</dd>
                     }

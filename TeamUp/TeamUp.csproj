@@ -257,6 +257,10 @@
     <Compile Include="Migrations\202009122118511_status to string.Designer.cs">
       <DependentUpon>202009122118511_status to string.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202009122158393_app i user.cs" />
+    <Compile Include="Migrations\202009122158393_app i user.Designer.cs">
+      <DependentUpon>202009122158393_app i user.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddTeamRole.cs" />
@@ -583,6 +587,8 @@
     <Content Include="Views\Teams\AddNewRole.cshtml" />
     <Content Include="Views\Manage\Profile.cshtml" />
     <Content Include="Views\Teams\Applications.cshtml" />
+    <Content Include="Views\Manage\Teams.cshtml" />
+    <Content Include="Views\Manage\Application.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Images\UserPhotos\" />
@@ -654,6 +660,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202009122118511_status to string.resx">
       <DependentUpon>202009122118511_status to string.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009122158393_app i user.resx">
+      <DependentUpon>202009122158393_app i user.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

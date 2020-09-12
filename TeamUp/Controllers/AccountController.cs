@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -155,6 +156,15 @@ namespace TeamUp.Controllers
             {
                 string FileName = string.Format(@"{0}", Guid.NewGuid());
                 string FileExtension = Path.GetExtension(model.ImageFile.FileName);
+
+                if(FileExtension == ".jpg" || FileExtension == ".png" || FileExtension == ".gif" || FileExtension == ".jpeg")
+                {
+
+                }
+                else
+                {
+                    return RedirectToAction("Register");
+                }
 
                 string _FileName = FileName + FileExtension;
                 model.ImagePath = Path.Combine(Server.MapPath("~/Images/UserPhotos/"), _FileName);

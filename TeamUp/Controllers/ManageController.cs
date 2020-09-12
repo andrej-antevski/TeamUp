@@ -77,6 +77,19 @@ namespace TeamUp.Controllers
 
         }
 
+        public ActionResult Teams()
+        {
+            ViewBag.UserLoggedId = db.Users.Find(User.Identity.GetUserId()).Id;
+            var user = db.Users.Find(User.Identity.GetUserId());
+            return View(user.Teams.ToList());
+        }
+
+        public ActionResult Application()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            return View(user.Applications.ToList());
+        }
+
         //
         // GET: /Manage/Index
         public async Task<ActionResult> Index(ManageMessageId? message)

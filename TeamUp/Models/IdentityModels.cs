@@ -24,6 +24,7 @@ namespace TeamUp.Models
         public ApplicationUser()
         {
             Teams = new List<Team>();
+            Applications = new List<Application>();
         }
 
         [Required]
@@ -36,6 +37,7 @@ namespace TeamUp.Models
         public string Image { get; set; }
         public virtual Resume Resume { get; set; }
         public virtual ICollection<Team> Teams { get; set; }
+        public virtual ICollection<Application> Applications { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

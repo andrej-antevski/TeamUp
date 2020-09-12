@@ -1,0 +1,60 @@
+﻿@model IEnumerable<TeamUp.Models.Application>
+
+@{
+    ViewBag.Title = "Application";
+}
+
+<h2>My Applications</h2>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateSent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ForRole)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.To)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateSent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ForRole.Name)
+            </td>
+            <td>
+                <a href="~/Teams/Details/@item.To.Id">
+                    @Html.DisplayFor(modelItem => item.To.Name)
+                </a>
+            </td>
+
+        </tr>
+        }
+    </tbody>
+</table>
+@section scripts{
+    <script>
+        $(".table").DataTable();
+    </script>    
+}

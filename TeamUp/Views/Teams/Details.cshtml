@@ -45,13 +45,24 @@
 
     </dl>
 </div>
+<dl class="dl-horizontal">
+    <dt>Roles Needed:</dt>
+    <dd></dd>
+    @foreach (var role in Model.RolesNeeded)
+    {
+        if (role.Filled) { continue; }
+        <dt>@role.Name</dt>
+        <dd>@role.Description</dd>
+    }
+    @if (Model.Admin.Id == ViewBag.IdLoggedIn)
+    {
+        <dt><a href="~/Teams/AddNewRole/@Model.Id">Add new Role</a></dt>
+        <dd></dd>
+    }
 
-@foreach (var role in Model.RolesNeeded)
-{
-    <p>@role.Name</p>
-    <p>@role.Description</p>
-}
-<a href="~/Teams/AddNewRole/@Model.Id">Add new Role</a>
+</dl>
+
+
 <h2>Messages:</h2>
     <input type="text" id="message" autocomplete="off"/>
     <button onclick="postMessage(@Model.Id)" id="send-btn">Send</button>
@@ -59,9 +70,10 @@
     <p>@message.From.FirstName: @message.Text - @message.TimeSent</p>
 }
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index") |
+    @if (Model.Admin.Id == ViewBag.IdLoggedIn) {
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) <span>|</span>
     @Html.ActionLink("Applications", "Applications", new { id = Model.Id })
+    }
 </p>
 
 @section scripts{

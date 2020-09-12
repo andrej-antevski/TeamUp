@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
@@ -19,6 +20,12 @@ namespace TeamUp.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+        public ApplicationUser()
+        {
+            Teams = new List<Team>();
+        }
+
         [Required]
         public string FirstName { get; set; }
         [Required]
@@ -28,6 +35,7 @@ namespace TeamUp.Models
         public DateTime Birthday{ get; set; }
         public string Image { get; set; }
         public virtual Resume Resume { get; set; }
+        public virtual ICollection<Team> Teams { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -43,7 +51,7 @@ namespace TeamUp.Models
         public DbSet<Message> Messages{ get; set; }
         public DbSet<RolesNeeded> RolesNeeded { get; set; }
         public DbSet<Team> Teams { get; set; }
-
+        public DbSet<Application> Applications { get; set; }
         public DbSet<Technology> Technologies { get; set; }
         public static ApplicationDbContext Create()
         {

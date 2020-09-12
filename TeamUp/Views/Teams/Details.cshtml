@@ -60,7 +60,8 @@
 }
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "Index") |
+    @Html.ActionLink("Applications", "Applications", new { id = Model.Id })
 </p>
 
 @section scripts{

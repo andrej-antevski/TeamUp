@@ -233,9 +233,34 @@
     <Compile Include="Migrations\202009121505150_added teams.Designer.cs">
       <DependentUpon>202009121505150_added teams.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202009121918350_Added filled by in roles.cs" />
+    <Compile Include="Migrations\202009121918350_Added filled by in roles.Designer.cs">
+      <DependentUpon>202009121918350_Added filled by in roles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009121935398_Application and members of team.cs" />
+    <Compile Include="Migrations\202009121935398_Application and members of team.Designer.cs">
+      <DependentUpon>202009121935398_Application and members of team.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009121952209_added datetime datatype on team.cs" />
+    <Compile Include="Migrations\202009121952209_added datetime datatype on team.Designer.cs">
+      <DependentUpon>202009121952209_added datetime datatype on team.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009122003379_added display names.cs" />
+    <Compile Include="Migrations\202009122003379_added display names.Designer.cs">
+      <DependentUpon>202009122003379_added display names.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009122006364_allow duedate null.cs" />
+    <Compile Include="Migrations\202009122006364_allow duedate null.Designer.cs">
+      <DependentUpon>202009122006364_allow duedate null.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009122118511_status to string.cs" />
+    <Compile Include="Migrations\202009122118511_status to string.Designer.cs">
+      <DependentUpon>202009122118511_status to string.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddTeamRole.cs" />
+    <Compile Include="Models\Application.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -557,6 +582,7 @@
     <Content Include="Views\Teams\Index.cshtml" />
     <Content Include="Views\Teams\AddNewRole.cshtml" />
     <Content Include="Views\Manage\Profile.cshtml" />
+    <Content Include="Views\Teams\Applications.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Images\UserPhotos\" />
@@ -610,6 +636,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202009121505150_added teams.resx">
       <DependentUpon>202009121505150_added teams.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009121918350_Added filled by in roles.resx">
+      <DependentUpon>202009121918350_Added filled by in roles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009121935398_Application and members of team.resx">
+      <DependentUpon>202009121935398_Application and members of team.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009121952209_added datetime datatype on team.resx">
+      <DependentUpon>202009121952209_added datetime datatype on team.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009122003379_added display names.resx">
+      <DependentUpon>202009122003379_added display names.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009122006364_allow duedate null.resx">
+      <DependentUpon>202009122006364_allow duedate null.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009122118511_status to string.resx">
+      <DependentUpon>202009122118511_status to string.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

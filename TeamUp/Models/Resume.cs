@@ -22,6 +22,7 @@ namespace TeamUp.Models
         public string Experience { get; set; }
         public virtual ICollection<Technology> Technologies { get; set; }
         [Required]
+        [Display(Name = "Hobbies And Interests")]
         public string HobbiesInterests { get; set; }
 
     }

@@ -96,7 +96,8 @@ namespace TeamUp.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime Birthday { get; set; }
 
-        [Display(Name = "Upload File")]
+        [Display(Name = "Profile Photo")]
+        [Required]
         public string ImagePath { get; set; }
 
         public HttpPostedFileBase ImageFile { get; set; }

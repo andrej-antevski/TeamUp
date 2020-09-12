@@ -1,0 +1,66 @@
+﻿@model IEnumerable<TeamUp.Models.Application>
+
+@{
+    ViewBag.Title = "Applications";
+}
+
+<h2>Applications</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.From)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.From.Resume)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ForRole)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DateSent)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            Decision
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a href="~/Manage/Profile/@item.From.Id">
+                @Html.DisplayFor(modelItem => item.From.LastName)
+            </a>
+        </td>
+        <td>
+            @if (item.From.Resume != null)
+            {
+                <a href="~/Resumes/Details/@item.From.Resume.Id">Resume</a>
+            }
+            else
+            {
+                <span>User doens't have a resume</span>
+            }
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ForRole.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateSent)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

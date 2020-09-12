@@ -38,7 +38,9 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Admin.FirstName)
+            <a href="~/Manage/Profile/@Model.Admin.Id">
+                @Html.DisplayFor(model => model.Admin.FirstName)
+            </a>
         </dd>
 
     </dl>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
@@ -58,6 +59,22 @@ namespace TeamUp.Controllers
         {
             var model = db.Users.ToList();
             return View(model);
+        }
+
+        public ActionResult Profile(string id)
+        {
+            if(id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "User doesn't exist");
+            }
+
+            var model = db.Users.Find(id);
+            if (model == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "User doesn't exist");
+            }
+            return View(model);
+
         }
 
         //

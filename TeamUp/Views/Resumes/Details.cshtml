@@ -35,40 +35,55 @@
         </dd>
     </dl>
     <dl class="dl-horizontal">
-        <dt><h3>Knowledge in:</h3></dt>
-        <dd></dd>
-    </dl>
-
-    <dl class="dl-horizontal">
+        <dt class="text-info">Experienced in:</dt>
+        <dd>@if (!Model.Experience.Any())
+        {
+            <span>None</span>
+        }</dd>
         @foreach (var tech in Model.Technologies)
         {
-            <dt>@tech.Name - @tech.Grade </dt>
+            <dt>@tech.Name - @tech.Grade/10</dt>
             <dd>@tech.Comment</dd>
             <dd><a onclick="deleteTech(@tech.Id)" href="#" class="text-danger">Remove</a></dd>
         }
-
-        <dt><a href="~/Resumes/AddTech/@Model.Id">Add new tech</a></dt>
+        @if (ViewBag.Owner)
+        {
+            <dt><a href="~/Resumes/AddTech/@Model.Id">Add new tech</a></dt>
+            <dd></dd>
+        }
     </dl>
     <dl class="dl-horizontal">
-        <dt><h3>Links:</h3></dt>
-        <dd></dd>
-    </dl>
-    <dl class="dl-horizontal">
+        <dt class="text-info">Links:</dt>
+        <dd>
+            @if (!Model.Links.Any())
+            {
+                <span>None</span>
+            }
+            </dd>
         @foreach (var link in Model.Links)
         {
             <dt><a href="@link.URL">@link.Name</a></dt>
             <dd><a onclick="deleteLink(@link.Id)" href="#" class="text-danger">Remove</a></dd>
         }
-        <dt><a href="~/Resumes/AddLinks/@Model.Id">Add new Link</a></dt>
-        <dd></dd>
+        @if (ViewBag.Owner)
+        {
+            <dt><a href="~/Resumes/AddLinks/@Model.Id">Add new Link</a></dt>
+            <dd></dd>
+        }
     </dl>
-    
-    
+    @if (ViewBag.Owner)
+    {
+        <a href="~/Resumes/Delete/@Model.Id"><button type="button" class="btn btn-danger">Delete Resume</button></a>
+    }
 
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    <a href="~/Manage">Back</a>    
+    @if (ViewBag.Owner)
+    {
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) <span>|</span>
+        <a href="~/Manage">Back</a>
+    }
+
 </p>
 
 @section scripts{

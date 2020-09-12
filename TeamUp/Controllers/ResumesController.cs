@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -11,6 +12,7 @@ using TeamUp.Models;
 
 namespace TeamUp.Controllers
 {
+    [Authorize]
     public class ResumesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -19,6 +21,16 @@ namespace TeamUp.Controllers
         public ActionResult Index()
         {
             return View(db.Resumes.ToList());
+        }
+
+        private bool VerifyResume(Resume resume)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Resume == null || user.Resume.Id != resume.Id)
+            {
+                return false;
+            }
+            return true;
         }
 
         // GET: Resumes/Details/5
@@ -33,6 +45,8 @@ namespace TeamUp.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.Owner = VerifyResume(resume);
+
             return View(resume);
         }
 
@@ -62,6 +76,7 @@ namespace TeamUp.Controllers
             return View(resume);
         }
 
+        
         // GET: Resumes/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -70,6 +85,10 @@ namespace TeamUp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Resume resume = db.Resumes.Find(id);
+            if (!VerifyResume(resume))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (resume == null)
             {
                 return HttpNotFound();
@@ -86,9 +105,16 @@ namespace TeamUp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(resume).State = EntityState.Modified;
+                if (!VerifyResume(resume))
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                var userRes = db.Users.Find(User.Identity.GetUserId()).Resume;
+                userRes.Education = resume.Education;
+                userRes.Experience = resume.Experience;
+                userRes.HobbiesInterests = resume.HobbiesInterests;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details/" + resume.Id);
             }
             return View(resume);
         }
@@ -101,6 +127,10 @@ namespace TeamUp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Resume resume = db.Resumes.Find(id);
+            if (!VerifyResume(resume))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (resume == null)
             {
                 return HttpNotFound();
@@ -114,6 +144,10 @@ namespace TeamUp.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Resume resume = db.Resumes.Find(id);
+            if (!VerifyResume(resume))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             db.Resumes.Remove(resume);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -126,6 +160,10 @@ namespace TeamUp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Resume resume = db.Resumes.Find(id);
+            if (!VerifyResume(resume))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (resume == null)
             {
                 return HttpNotFound();
@@ -138,6 +176,10 @@ namespace TeamUp.Controllers
         public ActionResult AddLinks(ResumeAddFields model)
         {
             var resume = db.Resumes.Find(model.ResumeId);
+            if (!VerifyResume(resume))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             resume.Links.Add(model.Link);
             db.SaveChanges();
             return RedirectToAction("Details/" + model.ResumeId);
@@ -149,6 +191,10 @@ namespace TeamUp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Resume resume = db.Resumes.Find(id);
+            if (!VerifyResume(resume))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (resume == null)
             {
                 return HttpNotFound();
@@ -161,6 +207,10 @@ namespace TeamUp.Controllers
         public ActionResult AddTech(ResumeAddTech model)
         {
             var resume = db.Resumes.Find(model.ResumeId);
+            if (!VerifyResume(resume))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             resume.Technologies.Add(model.Technology);
             db.SaveChanges();
             return RedirectToAction("Details/" + model.ResumeId);
@@ -171,6 +221,18 @@ namespace TeamUp.Controllers
             {
                 return;
             }
+            
+            foreach(var resume in db.Resumes.ToList())
+            {
+                foreach(var tech in resume.Technologies)
+                {
+                    if (tech.Id == (int)id && !VerifyResume(resume))
+                    {
+                        return;   
+                    }
+                }
+            }
+
             var techItem = db.Technologies.Remove(db.Technologies.Find(id));
             db.SaveChanges();
             
@@ -180,6 +242,16 @@ namespace TeamUp.Controllers
             if (id == null)
             {
                 return;
+            }
+            foreach (var resume in db.Resumes.ToList())
+            {
+                foreach (var link in resume.Links)
+                {
+                    if (link.Id == (int)id && !VerifyResume(resume))
+                    {
+                        return;
+                    }
+                }
             }
             var techItem = db.Links.Remove(db.Links.Find(id));
             db.SaveChanges();

@@ -40,6 +40,9 @@ namespace TeamUp.Models
         public DbSet<Resume> Resumes { get; set; }
 
         public DbSet<Link> Links { get; set; }
+        public DbSet<Message> Messages{ get; set; }
+        public DbSet<RolesNeeded> RolesNeeded { get; set; }
+        public DbSet<Team> Teams { get; set; }
 
         public DbSet<Technology> Technologies { get; set; }
         public static ApplicationDbContext Create()

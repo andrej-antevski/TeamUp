@@ -1,129 +1,158 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Net.Configuration;
 using System.Web;
 using System.Web.Mvc;
 using TeamUp.Models;
 
-
 namespace TeamUp.Controllers
 {
-    public class LinksController : Controller
+    public class TeamsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-
-
-        // GET: Links
+        // GET: Teams
         public ActionResult Index()
         {
-            return View(db.Links.ToList());
+            return View(db.Teams.ToList());
         }
 
-        // GET: Links/Details/5
+        // GET: Teams/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Link link = db.Links.Find(id);
-            if (link == null)
+            Team team = db.Teams.Find(id);
+            if (team == null)
             {
                 return HttpNotFound();
             }
-            return View(link);
+            return View(team);
         }
 
-        // GET: Links/Create
-        public ActionResult Create(int id)
+        // GET: Teams/Create
+        public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Links/Create
+        // POST: Teams/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,URL")] Link link, int id)
+        public ActionResult Create([Bind(Include = "Id,Name,Description,DueDate")] Team team)
         {
             if (ModelState.IsValid)
             {
-                var userid = User.Identity.GetUserId();
-                var user = db.Users.Find(userid);
-
-                db.Links.Add(link);
-                user.Resume.Links.Add(link);
+                team.Admin = db.Users.Find(User.Identity.GetUserId());
+                db.Teams.Add(team);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(link);
+            return View(team);
         }
 
-        // GET: Links/Edit/5
+        // GET: Teams/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Link link = db.Links.Find(id);
-            if (link == null)
+            Team team = db.Teams.Find(id);
+            if (team == null)
             {
                 return HttpNotFound();
             }
-            return View(link);
+            return View(team);
         }
 
-        // POST: Links/Edit/5
+        // POST: Teams/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,URL")] Link link)
+        public ActionResult Edit([Bind(Include = "Id,Name,Description,DueDate")] Team team)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(link).State = EntityState.Modified;
+                db.Entry(team).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(link);
+            return View(team);
         }
 
-        // GET: Links/Delete/5
+        // GET: Teams/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Link link = db.Links.Find(id);
-            if (link == null)
+            Team team = db.Teams.Find(id);
+            if (team == null)
             {
                 return HttpNotFound();
             }
-            return View(link);
+            return View(team);
         }
 
-        // POST: Links/Delete/5
+        // POST: Teams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Link link = db.Links.Find(id);
-            db.Links.Remove(link);
+            Team team = db.Teams.Find(id);
+            db.Teams.Remove(team);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
+        public ActionResult AddNewRole(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Team team = db.Teams.Find(id);
+            if (team == null)
+            {
+                return HttpNotFound();
+            }
+            var model = new AddTeamRole();
+            model.TeamId = (int)id;
+
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult AddNewRole(AddTeamRole model)
+        {
+            var Team = db.Teams.Find(model.TeamId);
+            Team.RolesNeeded.Add(model.RolesNeeded);
+            db.SaveChanges();
+            return RedirectToAction("Details/" + model.TeamId);
+        }
+        public void AddMessage(int id, string message)
+        {
+            var team = db.Teams.Find(id);
+            Message msg = new Message();
+            msg.From = db.Users.Find(User.Identity.GetUserId());
+            msg.Text = message;
+            msg.TimeSent = DateTime.Now;
+            team.Chat.Add(msg);
+            db.SaveChanges();
+
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

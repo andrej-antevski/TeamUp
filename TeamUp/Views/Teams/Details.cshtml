@@ -36,6 +36,11 @@
                             <a href="~/Manage/Profile/@role.FilledBy.Id">@role.FilledBy.FirstName</a>
                         </dt>
                         <dd>@role.Name</dd><dd>@role.Description</dd>
+                        
+                        if(Model.Admin.Id == ViewBag.IdLoggedIn)
+                        {
+                         <dd><a href="#" class="text-danger" onclick="banUser(@Model.Id, @role.Id)">Ban</a></dd>
+                        }
                     }
                 }
             </dl>
@@ -140,13 +145,29 @@
 
         function deleteRole(id) {
             bootbox.confirm("Are you sure you want to delete this role", function (result) {
-                $.ajax({
-                    method: "GET",
-                    url: "/Teams/DeleteRole/" + id,
-                    success: function () {
-                        $(document.body).load(location.href);
-                    }
-                })
+                if (result) {
+                    $.ajax({
+                        method: "GET",
+                        url: "/Teams/DeleteRole/" + id,
+                        success: function () {
+                            $(document.body).load(location.href);
+                        }
+                    })
+                }
+            })
+        }
+
+        function banUser(id, roleId) {
+            bootbox.confirm("Are you sure you want to ban this user?", function (result) {
+                if (result) {
+                    $.ajax({
+                        method: "GET",
+                        url: "/Teams/RemoveUser/" + id + "?roleId=" + roleId,
+                        success: function () {
+                            $(document.body).load(location.href);
+                        }
+                    })
+                }
             })
         }
     </script>

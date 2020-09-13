@@ -3,7 +3,7 @@
     ViewBag.Title = "Manage";
 }
 
-<h2>@ViewBag.Title.</h2>
+<h2>Manage Your Account</h2>
 
 <p class="text-success">@ViewBag.StatusMessage</p>
 <div>
@@ -44,23 +44,26 @@
             }
         </dd>
 
-       
-        </dd>
+
         <dt>First Name:</dt>
         <dd>@Model.FirstName</dd>
         <dt>Last Name:</dt>
         <dd>@Model.LastName</dd>
         <dt>Birthday:</dt>
         <dd>@Model.Birthday</dd>
+        <dt>Resume</dt>
+        <dd>
+            @if (Model.Resume != null)
+            {
+                <a href="~/Resumes/Details/@Model.Resume.Id">Resume</a>
+            }
+            else
+            {
+                <a href="~/Resumes/Create">Add Resume</a>
+            }
+        </dd>
+        <dt>Profile Picture</dt>
+        <dd><img src="~/Images/UserPhotos/@Model.Image" width="200" /></dd>
     </dl>
-    <img src="~/Images/UserPhotos/@Model.Image" width="200" />
-    @if (Model.Resume != null)
-    {
-        <a href="~/Resumes/Details/@Model.Resume.Id">Resume</a>
-    }
-    else
-    {
-        <a href="~/Resumes/Create">Add Resume</a>
-    }
 
 </div>

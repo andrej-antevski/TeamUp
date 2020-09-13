@@ -10,7 +10,7 @@ namespace TeamUp.Models
     {
         [Key]
         public int Id { get; set; }
-        public ApplicationUser From{ get; set; }
+        public virtual ApplicationUser From{ get; set; }
         [Required]
         public string Text { get; set; }
         [DataType(DataType.DateTime)]

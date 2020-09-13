@@ -11,8 +11,10 @@ using System.Web;
 using System.Web.Mvc;
 using TeamUp.Models;
 
+
 namespace TeamUp.Controllers
 {
+    [Authorize]
     public class TeamsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -36,7 +38,22 @@ namespace TeamUp.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.IdLoggedIn = db.Users.Find(User.Identity.GetUserId()).Id;
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            ViewBag.IdLoggedIn = userLoggedIn.Id;
+            var mem = false;
+            foreach(var member in team.Members)
+            {
+                if (member.Id == userLoggedIn.Id)
+                {
+                    mem = true;
+                    break;
+                }
+            }
+
+            if (!mem)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             return View(team);
         }
 
@@ -58,12 +75,11 @@ namespace TeamUp.Controllers
                 var user = db.Users.Find(User.Identity.GetUserId());
                 team.Admin = user;
                 team.Members.Add(user);
-                user.Teams.Add(team);
                 db.Teams.Add(team);
+                user.Teams.Add(team);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
             return View(team);
         }
 
@@ -79,6 +95,11 @@ namespace TeamUp.Controllers
             {
                 return HttpNotFound();
             }
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            if (team.Admin.Id != userLoggedIn.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             return View(team);
         }
 
@@ -91,10 +112,20 @@ namespace TeamUp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(team).State = EntityState.Modified;
+                
+                var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+                var toChange = db.Teams.Find(team.Id);
+                if (toChange.Admin.Id != userLoggedIn.Id)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                toChange.Name = team.Name;
+                toChange.Description = team.Description;
+                toChange.DueDate = team.DueDate;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details/" + team.Id);
             }
+
             return View(team);
         }
 
@@ -110,6 +141,11 @@ namespace TeamUp.Controllers
             {
                 return HttpNotFound();
             }
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            if (team.Admin.Id != userLoggedIn.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             return View(team);
         }
 
@@ -119,7 +155,11 @@ namespace TeamUp.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Team team = db.Teams.Find(id);
-            team.Members = null;
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            if (team.Admin.Id != userLoggedIn.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             team.Admin = null;
             foreach (var msg in team.Chat.ToList())
             {
@@ -134,6 +174,14 @@ namespace TeamUp.Controllers
             {
                 member.Teams.Remove(team);
             }
+            foreach(var application in db.Applications.ToList())
+            {
+                if (application.To.Id == team.Id)
+                {
+                    db.Applications.Remove(application);
+                }
+            }
+            team.Members = null;
             db.SaveChanges();
             db.Teams.Remove(team);
             db.SaveChanges();
@@ -151,6 +199,11 @@ namespace TeamUp.Controllers
             {
                 return HttpNotFound();
             }
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            if (team.Admin.Id != userLoggedIn.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             var model = new AddTeamRole();
             model.TeamId = (int)id;
 
@@ -160,15 +213,41 @@ namespace TeamUp.Controllers
         public ActionResult AddNewRole(AddTeamRole model)
         {
             var Team = db.Teams.Find(model.TeamId);
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            if (Team.Admin.Id != userLoggedIn.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             model.RolesNeeded.Filled = false;
             model.RolesNeeded.FilledBy = null;
             Team.RolesNeeded.Add(model.RolesNeeded);
             db.SaveChanges();
             return RedirectToAction("Details/" + model.TeamId);
         }
+        public void DeleteRole(int id)
+        {
+            db.RolesNeeded.Remove(db.RolesNeeded.Find(id));
+            db.SaveChanges();
+        }
         public void AddMessage(int id, string message)
         {
             var team = db.Teams.Find(id);
+
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            var canPost = false;
+            foreach (var member in team.Members)
+            {
+                if (member.Id == userLoggedIn.Id)
+                {
+                    canPost = true;
+                    break;
+                }   
+            }
+            if (!canPost)
+            {
+                return;
+            }
+
             Message msg = new Message();
             msg.From = db.Users.Find(User.Identity.GetUserId());
             msg.Text = message;
@@ -229,19 +308,41 @@ namespace TeamUp.Controllers
             var app = db.Applications.Find(id);
             var user = db.Users.Find(app.From.Id);
             var team = app.To;
+
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            if (team.Admin.Id != userLoggedIn.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             var role = app.ForRole;
+            
             var roleInTeam = team.RolesNeeded.FirstOrDefault(m => m.Id == role.Id);
             app.Status = "a";
             roleInTeam.Filled = true;
             roleInTeam.FilledBy = user;
+            foreach (var application in db.Applications.ToList())
+            {
+                if (application.To.Id == team.Id && application.Status == "w" && application.ForRole.Id == roleInTeam.Id)
+                {
+                    application.Status = "d";
+                }
+            }
             team.Members.Add(user);
             user.Teams.Add(team);
             db.SaveChanges();
-            return View();
+            return RedirectToAction("Applications/" + team.Id);
         }
         public ActionResult DenyApplication(int id)
         {
-            db.Applications.Find(id).Status = "d";
+            var app = db.Applications.Find(id);
+            var team = app.To;
+            var userLoggedIn = db.Users.Find(User.Identity.GetUserId());
+            if (team.Admin.Id != userLoggedIn.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            app.Status = "d";
             db.SaveChanges();
             return View();
         }

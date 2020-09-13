@@ -4,75 +4,107 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h1>@Model.Name</h1>
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6">
+            <h3>Description: </h3>
+            <p class="text-justify">
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+            </p>
+            @if (Model.DueDate != null)
+            {
+        <h4 style="display: inline" class="text-danger">@Html.DisplayNameFor(model => model.DueDate) - @Html.DisplayFor(model => model.DueDate)</h4>
+            }
 
-<div>
-    <h4>Team</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+        </div>
+        <div class="col-xs-6">
+            <h3>Members & roles: </h3>
+            <dl class="dl-horizontal">
+                <dt><h4><strong>Member</strong></h4></dt>
+                <dd><h4><strong>Role</strong></h4></dd>
+                <dt>
+                    <a href="~/Manage/Profile/@Model.Admin.Id">@Model.Admin.FirstName</a>
+                </dt>
+                <dd>Team Admin</dd>
+                @foreach(var role in Model.RolesNeeded)
+                {
+                    if (role.Filled)
+                    {
+                        <dt>
+                            <a href="~/Manage/Profile/@role.FilledBy.Id">@role.FilledBy.FirstName</a>
+                        </dt>
+                        <dd>@role.Name</dd><dd>@role.Description</dd>
+                    }
+                }
+            </dl>
+            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6" style="">
+            <h3>Team Chat:</h3>
+            <div style="height: 500px; overflow-y:scroll; border: 1px solid black; border-radius: 5px;"  id="message-box">
+                @foreach (var message in Model.Chat)
+                {
+                <div style="margin: 5px; background:#faf3e1; border-radius:5px; border: 1px solid black; padding: 4px;">
+                    <img src="~/Images/UserPhotos/@message.From.Image" width="50" height="50" style="display: inline; float: left;" />
+                    <span style="font-size: 15px;">&nbsp; &nbsp; @message.From.FirstName - @message.TimeSent</span>
+                    
+                    <p style="margin-left: 78px; text-align:justify">@message.Text</p>
+                </div>
+                
+                }
+            </div>
+                <input type="text" id="message" autocomplete="off" class="form-control" style="min-width:100%; margin:5px 0 5px 0" placeholder="Your Message"/>
+                <button onclick="postMessage(@Model.Id)" id="send-btn" class="form-control btn btn-info">Send</button>
+        </div>
+        <div class="col-xs-6">
+            <h3>Roles Needed</h3>
+            <dl class="dl-horizontal">
+                <dt><h4><strong>Role</strong></h4></dt>
+                <dd><h4><strong>Role Description</strong></h4></dd>
+                @foreach (var role in Model.RolesNeeded)
+                {
+                    if (!role.Filled)
+                    {
+                        <dt>@role.Name</dt>
+                         
+                        <dd>
+                            @role.Description
+                            @if(Model.Admin.Id == ViewBag.IdLoggedIn) {
+                            <span>-</span> <a href="#" class="text-danger" onclick="deleteRole(@role.Id)">X</a>
+                            }
+                        </dd>
+                    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.DueDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.DueDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Admin)
-        </dt>
-
-        <dd>
-            <a href="~/Manage/Profile/@Model.Admin.Id">
-                @Html.DisplayFor(model => model.Admin.FirstName)
-            </a>
-        </dd>
-
-    </dl>
+                }
+                @if (Model.Admin.Id == ViewBag.IdLoggedIn)
+                {
+                    <dt><a href="~/Teams/AddNewRole/@Model.Id">Add new Role</a></dt>
+                    <dd></dd>
+                }
+            </dl>
+        </div>
+    </div>
 </div>
-<dl class="dl-horizontal">
-    <dt>Roles Needed:</dt>
-    <dd></dd>
-    @foreach (var role in Model.RolesNeeded)
-    {
-        if (role.Filled) { continue; }
-        <dt>@role.Name</dt>
-        <dd>@role.Description</dd>
-    }
-    @if (Model.Admin.Id == ViewBag.IdLoggedIn)
-    {
-        <dt><a href="~/Teams/AddNewRole/@Model.Id">Add new Role</a></dt>
-        <dd></dd>
-    }
-
-</dl>
-
-
-<h2>Messages:</h2>
-    <input type="text" id="message" autocomplete="off"/>
-    <button onclick="postMessage(@Model.Id)" id="send-btn">Send</button>
-@foreach(var message in Model.Chat.Reverse()) { 
-    <p>@message.From.FirstName: @message.Text - @message.TimeSent</p>
-}
 <p>
     @if (Model.Admin.Id == ViewBag.IdLoggedIn) {
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) <span>|</span>
-    @Html.ActionLink("Applications", "Applications", new { id = Model.Id })
+    <div class="container">
+        <h4>Admin Panel</h4>
+        <a href="~/Teams/Edit/@Model.Id">
+            <button type="button" class="btn btn-warning">Edit</button>
+        </a>
+        <a href="~/Teams/Applications/@Model.Id">
+            <button type="button" class="btn btn-success">Applications</button>
+        </a>
+        <a href="~/Teams/Delete/@Model.Id">
+            <button type="button" class="btn btn-danger">Delete Team</button>
+        </a>
+
+    </div>
+
     }
 </p>
 
@@ -80,9 +112,15 @@
     <script>
 
         var input = document.getElementById("message");
-
+        var element = document.getElementById("message-box");
+        element.scrollTop = element.scrollHeight;
         function postMessage(id) {
             var message = input.value;
+            var str = message.replace(/\s/g, '');
+            if (message.length == 0 || str.length == 0) {
+                input.value = "";
+                return;
+            }
             input.value = "";
 
             $.ajax({
@@ -93,13 +131,23 @@
                 }
             })
         }
-
-
         input.addEventListener("keyup", function (event) {
             if (event.keyCode === 13) {
                 event.preventDefault();
                 document.getElementById("send-btn").click();
             }
         });
+
+        function deleteRole(id) {
+            bootbox.confirm("Are you sure you want to delete this role", function (result) {
+                $.ajax({
+                    method: "GET",
+                    url: "/Teams/DeleteRole/" + id,
+                    success: function () {
+                        $(document.body).load(location.href);
+                    }
+                })
+            })
+        }
     </script>
 }

@@ -81,7 +81,7 @@ namespace TeamUp.Controllers
         {
             ViewBag.UserLoggedId = db.Users.Find(User.Identity.GetUserId()).Id;
             var user = db.Users.Find(User.Identity.GetUserId());
-            return View(user.Teams.ToList());
+            return View(user.Teams);
         }
 
         public ActionResult Application()

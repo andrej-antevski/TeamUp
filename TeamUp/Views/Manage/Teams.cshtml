@@ -16,9 +16,9 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                My Role
+                Due Date
             </th>
-            <th></th>
+            <th>My role</th>
         </tr>
     </thead>
     <tbody>
@@ -35,14 +35,26 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
+                    @if(item.DueDate == null)
+                    {
+                        <span>No Due Date</span>
+                    }
                     @Html.DisplayFor(modelItem => item.DueDate)
                 </td>
                 <td>
-                    @foreach(var role in item.RolesNeeded)
+                    @if (item.Admin.Id == ViewBag.UserLoggedId)
                     {
-                        if(role.Filled && role.FilledBy.Id == ViewBag.UserLoggedId)
+                    <span>Admin</span>
+                        break;
+                    }
+                    else
+                    {
+                        foreach (var role in item.RolesNeeded)
                         {
+                            if (role.Filled && role.FilledBy.Id == ViewBag.UserLoggedId)
+                            {
                             <span>@role.Name</span>
+                            }
                         }
                     }
                 </td>

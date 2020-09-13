@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -79,9 +80,21 @@ namespace TeamUp.Controllers
 
         public ActionResult Teams()
         {
-            ViewBag.UserLoggedId = db.Users.Find(User.Identity.GetUserId()).Id;
             var user = db.Users.Find(User.Identity.GetUserId());
-            return View(user.Teams);
+            ViewBag.UserLoggedId = user.Id;
+            var teams = new List<Team>();
+            foreach(var team in db.Teams.ToList())
+            {
+                foreach(var member in team.Members)
+                {
+                    if (member.Id == user.Id)
+                    {
+                        teams.Add(team);
+                        break;
+                    }
+                }
+            }
+            return View(teams);
         }
 
         public ActionResult Application()

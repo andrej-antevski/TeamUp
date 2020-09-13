@@ -337,12 +337,12 @@ namespace TeamUp.Controllers
         {
             var team = db.Teams.Find(id);
             var user = db.RolesNeeded.Find(int.Parse(roleId)).FilledBy;
-            
+
             team.Members.Remove(user);
             user.Teams.Remove(team);
-            foreach(var role in team.RolesNeeded)
+            foreach (var role in team.RolesNeeded)
             {
-                if(role.FilledBy.Id == user.Id)
+                if (role.FilledBy.Id == user.Id)
                 {
                     role.FilledBy = null;
                     role.Filled = false;

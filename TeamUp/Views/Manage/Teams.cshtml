@@ -19,12 +19,14 @@
                 Due Date
             </th>
             <th>My role</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
 
         @foreach (var item in Model)
         {
+            var roleId = -1;
             <tr>
                 <td>
                     <a href="~/Teams/Details/@item.Id">
@@ -53,9 +55,17 @@
                         {
                             if (role.Filled && role.FilledBy.Id == ViewBag.UserLoggedId)
                             {
+                                roleId = role.Id;
                             <span>@role.Name</span>
                             }
                         }
+                    }
+                </td>
+                <td>
+                    @if (item.Admin.Id != ViewBag.UserLoggedIn) {
+
+                        <button onclick="leaveTeam(@item.Id, @roleId)" class="btn btn-danger">Leave</button>
+
                     }
                 </td>
             </tr>
@@ -65,5 +75,19 @@
 @section scripts{
     <script>
         $(".table").DataTable();
+
+        function leaveTeam(id, roleId) {
+            bootbox.confirm("Are you sure you want to leave this team?", function (result) {
+                if (result) {
+                    $.ajax({
+                        method: "GET",
+                        url: "/Teams/RemoveUser/" + id + "?roleId=" + roleId,
+                        success: function () {
+                            $(document.body).load(location.href);
+                        }
+                    })
+                }
+            })
+        }
     </script>
 }
